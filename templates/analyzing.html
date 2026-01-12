@@ -1,0 +1,354 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Exact Screenshot Replica) -->
+<style>
+    /* --- GENERAL LAYOUT --- */
+    .analysis-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+    }
+
+    .page-title {
+        color: #0d9488;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 40px;
+    }
+
+    /* --- 🃏 THE BRAIN CARDS --- */
+    .brain-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center; /* Centers the cards */
+        margin-bottom: 30px;
+    }
+
+    .brain-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #f8fafc;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); /* Soft Spread Shadow */
+        padding: 25px;
+        width: 270px; /* Fixed width to match pic */
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: fadeUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    /* Animation Stagger */
+    .brain-card:nth-child(1) { animation-delay: 0.1s; }
+    .brain-card:nth-child(2) { animation-delay: 0.2s; }
+    .brain-card:nth-child(3) { animation-delay: 0.3s; }
+    .brain-card:nth-child(4) { animation-delay: 0.4s; }
+    .brain-card:nth-child(5) { animation-delay: 0.5s; }
+
+    .brain-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px -10px rgba(13, 148, 136, 0.15);
+    }
+
+    /* Card Top Section (Icon & Circle) */
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+
+    /* Icons */
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    /* Color Themes */
+    .theme-green .icon-box { background: #d1fae5; color: #10b981; }
+    .theme-green .circle-text { color: #10b981; }
+    .theme-green .circle-path { stroke: #10b981; }
+
+    .theme-yellow .icon-box { background: #fef3c7; color: #f59e0b; }
+    .theme-yellow .circle-text { color: #f59e0b; }
+    .theme-yellow .circle-path { stroke: #f59e0b; }
+
+    .theme-red .icon-box { background: #fee2e2; color: #ef4444; }
+    .theme-red .circle-text { color: #ef4444; }
+    .theme-red .circle-path { stroke: #ef4444; }
+
+    /* Circular Progress (SVG) */
+    .circular-chart {
+        width: 50px;
+        height: 50px;
+    }
+    .circle-bg {
+        fill: none;
+        stroke: #f1f5f9;
+        stroke-width: 3.5;
+    }
+    .circle-path {
+        fill: none;
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        transition: stroke-dasharray 1s ease forwards;
+    }
+    .circle-text {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-anchor: middle;
+        fill: currentColor; /* Inherits from class */
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Card Text */
+    .brain-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+    .brain-sub {
+        color: #64748b;
+        font-size: 0.8rem;
+    }
+
+    /* --- 📉 BOTTOM STATUS CARD --- */
+    .status-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        border: 1px solid #f8fafc;
+        margin-top: 10px;
+        animation: fadeUp 0.8s ease-out forwards;
+        opacity: 0;
+    }
+
+    .status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .badge-complete {
+        background: #f0fdf4;
+        color: #10b981;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Thick Progress Bar */
+    .progress-track {
+        background: #e2e8f0;
+        height: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+    .progress-fill {
+        height: 100%;
+        background-color: #0d9488; /* Teal */
+        width: 0%; /* Animates to 100% via JS */
+        border-radius: 10px;
+        transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Button */
+    .btn-final {
+        background-color: #0d9488;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        margin-top: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-final:hover {
+        background-color: #0f766e;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="analysis-container">
+    
+    <!-- HEADER -->
+    <h2 class="page-title">AI Launch Committee Analysis</h2>
+    <p class="page-subtitle">Multiple AI brains analyzing your product launch readiness</p>
+
+    <!-- 🧠 GRID CARDS (3 Top, 2 Bottom) -->
+    <div class="brain-grid">
+        
+        <!-- 1. Market Brain (Green) -->
+        <div class="brain-card theme-green">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-chart-line"></i></div>
+                <!-- Circular SVG -->
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.market }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.market }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Market Brain</div>
+            <div class="brain-sub">High demand potential</div>
+        </div>
+
+        <!-- 2. Product Brain (Yellow) -->
+        <div class="brain-card theme-yellow">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-cube"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.product }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.product }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Product Brain</div>
+            <div class="brain-sub">Feature readiness check</div>
+        </div>
+
+        <!-- 3. Timing Brain (Green) -->
+        <div class="brain-card theme-green">
+            <div class="card-top">
+                <div class="icon-box"><i class="far fa-clock"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.timing }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.timing }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Timing Brain</div>
+            <div class="brain-sub">Optimal launch window</div>
+        </div>
+
+        <!-- 4. Risk Brain (Red) -->
+        <div class="brain-card theme-red">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.risk }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.risk }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Risk Brain</div>
+            <div class="brain-sub">Security & compliance</div>
+        </div>
+
+        <!-- 5. Business Brain (Yellow) -->
+        <div class="brain-card theme-yellow">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-dollar-sign"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.business }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.business }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Business Brain</div>
+            <div class="brain-sub">ROI Projection</div>
+        </div>
+
+    </div>
+
+    <!-- 🟢 STATUS CARD -->
+    <div class="status-card">
+        <div class="status-header">
+            <h5 style="font-weight: 700; color: #1e293b; margin:0;">Analysis Status</h5>
+            <div class="badge-complete">
+                <i class="fas fa-check-circle"></i> Analysis Complete
+            </div>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div style="text-align: right; font-size: 0.8rem; color: #64748b; margin-top: 5px;">
+            100% Complete
+        </div>
+
+        <!-- This anchor links to the Final Decision Modal or Section -->
+        <a href="#finalDecision" class="btn-final" data-bs-toggle="modal" data-bs-target="#decisionModal">
+            View Final Decision <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+</div>
+
+<!-- 🛑 FINAL DECISION MODAL (Popup to see the decision) -->
+<div class="modal fade" id="decisionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: none;">
+            <div class="modal-body p-0">
+                <!-- Inline Result Card -->
+                <div style="padding: 40px; text-align: center; background: white;">
+                    <div style="display:inline-block; background: {% if 'LAUNCH' in record.ai_result.decision %}#dcfce7{% elif 'DELAY' in record.ai_result.decision %}#fef9c3{% else %}#fee2e2{% endif %}; padding: 15px; border-radius: 50%; margin-bottom: 20px;">
+                        <i class="fas fa-gavel" style="font-size: 2rem; color: {% if 'LAUNCH' in record.ai_result.decision %}#166534{% elif 'DELAY' in record.ai_result.decision %}#854d0e{% else %}#991b1b{% endif %};"></i>
+                    </div>
+                    <h2 class="fw-bold" style="color: #1e293b; margin-bottom: 10px;">{{ record.ai_result.decision }}</h2>
+                    <p class="text-muted">Confidence Level: <strong>{{ record.ai_result.avg }}%</strong></p>
+                    
+                    <hr style="margin: 30px 0; border-color: #f1f5f9;">
+
+                    <div style="text-align: left;">
+                        <h6 class="fw-bold text-teal mb-3">Key Reasons:</h6>
+                        <ul style="list-style: none; padding: 0;">
+                            {% for reason in record.ai_result.reasons %}
+                            <li style="margin-bottom: 10px; display: flex; align-items: start; gap: 10px; color: #475569;">
+                                <i class="fas fa-check-circle" style="color: #0d9488; margin-top: 4px;"></i> {{ reason }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-center gap-3">
+                        <button class="btn btn-teal" onclick="window.print()">Download Report</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple animation to fill the progress bar on load
+    window.onload = function() {
+        setTimeout(() => {
+            document.getElementById('progressBar').style.width = '100%';
+        }, 300);
+    }
+</script>
+
+{% endblock %}

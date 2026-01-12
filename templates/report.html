@@ -1,0 +1,256 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Exact Replica of Report Screen) -->
+<style>
+    .report-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding-bottom: 60px;
+    }
+
+    .report-header-text {
+        margin-bottom: 30px;
+    }
+
+    .report-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.5rem;
+    }
+
+    /* --- 📄 MAIN REPORT CARD --- */
+    .report-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        margin-bottom: 25px;
+    }
+
+    /* Top Section: Icon + Info */
+    .report-top-section {
+        display: flex;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .doc-icon-square {
+        width: 60px;
+        height: 60px;
+        background-color: #ccfbf1; /* Light Teal */
+        color: #0f766e;           /* Dark Teal */
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+    }
+
+    .report-info h3 {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #0f172a;
+        margin-bottom: 12px;
+    }
+
+    .info-row {
+        font-size: 0.9rem;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+
+    .info-label {
+        font-weight: 700;
+        color: #334155;
+        width: 160px;
+        display: inline-block;
+    }
+
+    /* Decision Colors */
+    .text-launch { color: #166534; font-weight: 700; }
+    .text-delay { color: #d97706; font-weight: 700; } /* Orange */
+    .text-cancel { color: #dc2626; font-weight: 700; }
+
+    /* Divider */
+    .divider {
+        height: 1px;
+        background-color: #f1f5f9;
+        margin: 30px 0;
+    }
+
+    /* Summary Text */
+    .summary-section h5 {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #1e293b;
+        margin-bottom: 15px;
+    }
+
+    .summary-text {
+        font-size: 0.9rem;
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    /* Buttons */
+    .btn-group-report {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-download {
+        flex: 1;
+        background-color: #0d9488;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-download:hover { background-color: #0f766e; }
+
+    .btn-view-online {
+        flex: 1;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-view-online:hover { background-color: #f8fafc; }
+
+    /* --- ℹ️ INFO ALERT BOX --- */
+    .info-alert {
+        background-color: #f0fdf4; /* Very Light Green */
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        gap: 15px;
+        align-items: start;
+    }
+
+    .info-icon {
+        color: #15803d; /* Green */
+        font-size: 1.1rem;
+        margin-top: 2px;
+    }
+
+    .info-content h6 {
+        font-weight: 700;
+        color: #166534;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .info-content p {
+        font-size: 0.85rem;
+        color: #166534;
+        margin: 0;
+        line-height: 1.4;
+    }
+</style>
+
+<div class="report-container">
+    
+    <!-- Header -->
+    <div class="report-header-text">
+        <h2 class="report-title">Reports</h2>
+        <p class="text-muted small">Download and share your analysis reports</p>
+    </div>
+
+    <!-- 📄 REPORT CARD -->
+    <div class="report-card">
+        
+        <!-- Top Section -->
+        <div class="report-top-section">
+            <div class="doc-icon-square">
+                <i class="far fa-file-alt"></i>
+            </div>
+            <div class="report-info">
+                <h3>{{ record.details.name }} - Launch Analysis</h3>
+                
+                <div class="info-row">
+                    <span class="info-label">Product:</span> {{ record.details.name }}
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Decision:</span> 
+                    <span class="{% if 'LAUNCH' in record.ai_result.decision %}text-launch{% elif 'DELAY' in record.ai_result.decision %}text-delay{% else %}text-cancel{% endif %}">
+                        {{ record.ai_result.decision }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Confidence:</span> {{ record.ai_result.avg }}%
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Recommended Window:</span> 10 – 25 September
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Generated:</span> {{ record.timestamp.strftime('%B %d, %Y') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <h5>Report Summary</h5>
+            <p class="summary-text">
+                This comprehensive analysis evaluates the launch readiness of <strong>{{ record.details.name }}</strong> across five critical dimensions: Market, Product, Timing, Risk, and Business factors.
+            </p>
+            <p class="summary-text">
+                The AI committee recommends <strong>{{ record.ai_result.decision | lower }}ing</strong> the launch with <strong>{{ record.ai_result.avg }}% confidence</strong>. 
+                Key factors include improving market conditions in the coming month, necessary bug fixes to reduce risk, and ensuring marketing campaign preparation aligns with feature release.
+            </p>
+            <p class="summary-text">
+                The optimal launch window is identified as September 10-25, when all factors align favorably for maximum success probability.
+            </p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group-report">
+            <button class="btn-download" onclick="window.print()">
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+           
+        </div>
+
+    </div>
+
+    <!-- ℹ️ Info Alert -->
+    <div class="info-alert">
+        <i class="fas fa-info-circle info-icon"></i>
+        <div class="info-content">
+            <h6>Share with Management</h6>
+            <p>Reports can be downloaded as PDF for easy sharing with stakeholders and team members. All analysis data and recommendations are included.</p>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

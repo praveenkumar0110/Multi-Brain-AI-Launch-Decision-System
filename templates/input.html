@@ -1,0 +1,265 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Specific for this Page to match screenshot) -->
+<style>
+    /* Card Container */
+    .input-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08); /* Soft, deep shadow */
+        padding: 40px;
+        max-width: 600px;
+        margin: 0 auto;
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Labels with Icons */
+    .input-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .input-label i {
+        color: #0d9488; /* Teal Icon Color */
+    }
+
+    /* Text Inputs & Selects */
+    .custom-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: #1e293b;
+        outline: none;
+        transition: border-color 0.2s;
+        background-color: #fff;
+    }
+    
+    .custom-input:focus {
+        border-color: #0d9488;
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+    }
+
+    /* --- 🎚️ THE SLIDER (Exact Match) --- */
+    .range-container {
+        margin-top: 10px;
+        position: relative;
+    }
+
+    input[type=range] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0; /* Default Gray Track */
+        border-radius: 10px;
+        outline: none;
+        cursor: pointer;
+        /* The Gradient background is updated via JS to create the fill effect */
+        background-image: linear-gradient(#0d9488, #0d9488);
+        background-size: 75% 100%;
+        background-repeat: no-repeat;
+    }
+
+    /* The Thumb (Circle) */
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 24px;
+        width: 24px;
+        border-radius: 50%;
+        background: #0d9488;
+        border: 4px solid #fff; /* White ring inside */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+    }
+
+    /* --- ✅ MARKETING BUTTONS (Yes / No) --- */
+    .radio-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .radio-option {
+        flex: 1;
+        position: relative;
+    }
+
+    .radio-option input {
+        display: none; /* Hide actual radio */
+    }
+
+    .radio-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #64748b;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    /* Selected State: YES */
+    .radio-option input:checked + .radio-btn.yes-btn {
+        border-color: #0d9488;
+        color: #0d9488;
+        background-color: #f0fdf4;
+        font-weight: 600;
+    }
+
+    /* Selected State: NO */
+    .radio-option input:checked + .radio-btn.no-btn {
+        border-color: #ef4444;
+        color: #ef4444;
+        background-color: #fef2f2;
+        font-weight: 600;
+    }
+
+    /* --- 🚀 SUBMIT BUTTON --- */
+    .submit-btn {
+        background-color: #0d9488;
+        color: white;
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 25px;
+        cursor: pointer;
+        transition: background 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .submit-btn:hover {
+        background-color: #0f766e;
+    }
+</style>
+
+<!-- HEADER TEXT -->
+<div style="text-align: center; margin-bottom: 30px; margin-top: 20px;">
+    <h3 style="font-weight: 700; color: #0f766e; margin-bottom: 5px;">Product Details</h3>
+    <p style="color: #64748b; font-size: 0.95rem;">Enter your product information for AI-powered launch analysis</p>
+</div>
+
+<!-- FORM CARD -->
+<div class="input-card">
+    <form action="/analyze" method="POST">
+        
+        <!-- 1. Product Name -->
+        <div style="margin-bottom: 20px;">
+            <label class="input-label">
+                <i class="far fa-dot-circle"></i> Product Name
+            </label>
+            <input type="text" name="name" class="custom-input" placeholder="Enter product name" required>
+        </div>
+
+        <!-- 2. Product Type -->
+        <div style="margin-bottom: 20px;">
+            <label class="input-label">
+                <i class="fas fa-th-large"></i> Product Type
+            </label>
+            <select name="type" class="custom-input">
+                <option>Mobile App</option>
+                <option>Web Platform</option>
+                <option>SaaS Product</option>
+                <option>E-commerce Site</option>
+            </select>
+        </div>
+
+        <!-- 3. Slider -->
+        <div style="margin-bottom: 25px;">
+            <label class="input-label" style="justify-content: space-between;">
+                Feature Completion: 
+                <span style="color: #0d9488;"><span id="sliderValue">75</span>%</span>
+            </label>
+            <div class="range-container">
+                <input type="range" name="completion" min="0" max="100" value="75" id="completionRange" oninput="updateSlider(this)">
+            </div>
+        </div>
+
+        <!-- 4. Target Users -->
+        <div style="margin-bottom: 20px;">
+            <label class="input-label">
+                <i class="far fa-user"></i> Target Users
+            </label>
+            <input type="text" name="users" class="custom-input" placeholder="e.g., Students, Professionals, Enterprises" required>
+        </div>
+
+        <!-- 5. Date -->
+        <div style="margin-bottom: 20px;">
+            <label class="input-label">
+                <i class="far fa-calendar"></i> Planned Release Date
+            </label>
+            <input type="date" name="date" class="custom-input" required>
+        </div>
+
+        <!-- 6. Marketing Ready (Big Buttons) -->
+        <div style="margin-bottom: 10px;">
+            <label class="input-label">
+                <i class="fas fa-bullhorn"></i> Marketing Ready?
+            </label>
+            <div class="radio-group">
+                <!-- YES OPTION -->
+                <div class="radio-option">
+                    <input type="radio" name="marketing" id="mktYes" value="Yes" checked>
+                    <label class="radio-btn yes-btn" for="mktYes">
+                        <i class="fas fa-check" style="margin-right: 6px;"></i> Yes
+                    </label>
+                </div>
+                <!-- NO OPTION -->
+                <div class="radio-option">
+                    <input type="radio" name="marketing" id="mktNo" value="No">
+                    <label class="radio-btn no-btn" for="mktNo">
+                        <i class="fas fa-times" style="margin-right: 6px;"></i> No
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-cogs"></i> Analyze Launch Readiness <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
+        </button>
+
+    </form>
+</div>
+
+<!-- SCRIPT FOR SLIDER FILL EFFECT -->
+<script>
+    function updateSlider(rangeInput) {
+        // Update Text Number
+        document.getElementById('sliderValue').innerText = rangeInput.value;
+        
+        // Update Teal Fill Logic
+        var val = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
+        rangeInput.style.backgroundSize = val + '% 100%';
+    }
+
+    // Initialize on load
+    window.onload = function() {
+        var slider = document.getElementById("completionRange");
+        updateSlider(slider);
+    };
+</script>
+
+{% endblock %}

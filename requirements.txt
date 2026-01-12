@@ -1,0 +1,7 @@
+flask
+flask-jwt-extended
+pymongo
+python-dotenv
+openai
+reportlab
+scikit-learn

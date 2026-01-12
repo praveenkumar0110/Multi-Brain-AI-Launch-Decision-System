@@ -1,0 +1,306 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Exact Screenshot Replica) -->
+<style>
+    /* --- GENERAL LAYOUT --- */
+    .analysis-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+    }
+
+    .page-title {
+        color: #0d9488; /* Teal */
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 40px;
+    }
+
+    /* --- 🃏 THE BRAIN CARDS --- */
+    .brain-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        justify-content: center; /* Centers the cards */
+        margin-bottom: 30px;
+    }
+
+    .brain-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #f8fafc;
+        box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); /* Soft Shadow */
+        padding: 24px;
+        width: 300px; /* Fixed width to match pic */
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+
+    .brain-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px -5px rgba(13, 148, 136, 0.1);
+    }
+
+    /* Card Top Section (Icon & Circle) */
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+
+    /* Icons */
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    /* Color Themes (Exact Match) */
+    /* Green (Market, Timing) */
+    .theme-green .icon-box { background: #dcfce7; color: #16a34a; }
+    .theme-green .circle-text { fill: #16a34a; }
+    .theme-green .circle-path { stroke: #16a34a; }
+
+    /* Orange (Product, Business) */
+    .theme-orange .icon-box { background: #ffedd5; color: #ea580c; }
+    .theme-orange .circle-text { fill: #ea580c; }
+    .theme-orange .circle-path { stroke: #ea580c; }
+
+    /* Red (Risk) */
+    .theme-red .icon-box { background: #fee2e2; color: #dc2626; }
+    .theme-red .circle-text { fill: #dc2626; }
+    .theme-red .circle-path { stroke: #dc2626; }
+
+    /* Circular Progress (SVG) */
+    .circular-chart {
+        width: 55px;
+        height: 55px;
+    }
+    .circle-bg {
+        fill: none;
+        stroke: #f1f5f9;
+        stroke-width: 4;
+    }
+    .circle-path {
+        fill: none;
+        stroke-width: 4;
+        stroke-linecap: round;
+        /* Animation handled by dasharray in HTML */
+    }
+    .circle-text {
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-anchor: middle;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Card Text */
+    .brain-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+    .brain-sub {
+        color: #64748b;
+        font-size: 0.8rem;
+    }
+
+    /* --- 📉 BOTTOM STATUS CARD --- */
+    .status-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+        border: 1px solid #f8fafc;
+        margin-top: 10px;
+        max-width: 950px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .status-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .badge-complete {
+        background: #dcfce7;
+        color: #166534;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Thick Progress Bar */
+    .progress-track {
+        background: #e2e8f0;
+        height: 14px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+    .progress-fill {
+        height: 100%;
+        background-color: #0d9488; /* Teal */
+        width: 100%; /* Full width */
+        border-radius: 10px;
+    }
+
+    /* Button */
+    .btn-final {
+        background-color: #0d9488;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        margin-top: 25px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .btn-final:hover {
+        background-color: #0f766e;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+</style>
+
+<div class="analysis-container">
+    
+    <!-- HEADER -->
+    <h2 class="page-title">AI Launch Committee Analysis</h2>
+    <p class="page-subtitle">Multiple AI brains analyzing your product launch readiness</p>
+
+    <!-- 🧠 GRID CARDS (3 Top, 2 Bottom) -->
+    <div class="brain-grid">
+        
+        <!-- 1. Market Brain (Green) -->
+        <div class="brain-card theme-green">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-chart-line"></i></div>
+                <!-- Circular SVG -->
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.market }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.market }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Market Brain</div>
+            <div class="brain-sub">High demand potential</div>
+        </div>
+
+        <!-- 2. Product Brain (Orange) -->
+        <div class="brain-card theme-orange">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-cube"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.product }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.product }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Product Brain</div>
+            <div class="brain-sub">Feature readiness check</div>
+        </div>
+
+        <!-- 3. Timing Brain (Green) -->
+        <div class="brain-card theme-green">
+            <div class="card-top">
+                <div class="icon-box"><i class="far fa-clock"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.timing }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.timing }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Timing Brain</div>
+            <div class="brain-sub">Optimal launch window</div>
+        </div>
+
+        <!-- 4. Risk Brain (Red) -->
+        <div class="brain-card theme-red">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.risk }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.risk }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Risk Brain</div>
+            <div class="brain-sub">Security & compliance</div>
+        </div>
+
+        <!-- 5. Business Brain (Orange) -->
+        <div class="brain-card theme-orange">
+            <div class="card-top">
+                <div class="icon-box"><i class="fas fa-dollar-sign"></i></div>
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-path" stroke-dasharray="{{ record.ai_result.scores.business }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="circle-text">{{ record.ai_result.scores.business }}%</text>
+                </svg>
+            </div>
+            <div class="brain-title">Business Brain</div>
+            <div class="brain-sub">ROI Projection</div>
+        </div>
+
+    </div>
+
+    <!-- 🟢 STATUS CARD (Bottom) -->
+    <div class="status-card">
+        <div class="status-header">
+            <h5 class="status-title">Analysis Status</h5>
+            <div class="badge-complete">
+                <i class="fas fa-check-circle"></i> Analysis Complete
+            </div>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+        <div style="text-align: right; font-size: 0.8rem; color: #64748b; margin-top: 5px;">
+            100% Complete
+        </div>
+
+        <!-- Link to Decision Page -->
+        <a href="/decision/{{ record._id }}" class="btn-final">
+            View Final Decision <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

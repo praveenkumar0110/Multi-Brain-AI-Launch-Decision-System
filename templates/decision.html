@@ -1,0 +1,322 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Exact Replica of Decision Screen) -->
+<style>
+    /* Page Layout */
+    .decision-page-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding-bottom: 60px;
+    }
+
+    .page-header {
+        text-align: left;
+        margin-bottom: 30px;
+    }
+
+    .page-title {
+        font-weight: 700;
+        color: #0d9488;
+        font-size: 1.5rem;
+    }
+
+    /* --- 🏆 THE MAIN CARD --- */
+    .decision-main-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.08);
+        overflow: hidden; /* Keeps children inside corners */
+        border: 1px solid #f1f5f9;
+        margin-bottom: 30px;
+    }
+
+    /* 1. Top Banner (Recommendation) */
+    .recommendation-banner {
+        background: linear-gradient(to bottom, #fff7ed, #fff); /* Light Orange Fade */
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-bottom: 1px solid #fef3c7;
+    }
+
+    .rec-icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Dynamic Colors based on Decision */
+    .rec-launch { background: #dcfce7; color: #166534; }
+    .rec-delay  { background: #f97316; color: white; } /* Orange for Delay */
+    .rec-cancel { background: #fee2e2; color: #991b1b; }
+
+    .rec-text-small {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #9a3412; /* Dark Orange */
+        margin-bottom: 5px;
+    }
+
+    .rec-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #7c2d12; /* Brownish Orange */
+        margin: 0;
+    }
+
+    /* 2. Middle Stats Section */
+    .stats-container {
+        padding: 0 40px;
+        margin-top: 30px;
+        display: flex;
+        gap: 25px;
+    }
+
+    /* Confidence Box */
+    .stat-box {
+        flex: 1;
+        border-radius: 16px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .stat-box-blue {
+        background-color: #ecfeff; /* Light Cyan */
+        border: 1px solid #cffafe;
+    }
+
+    .stat-box-purple {
+        background: linear-gradient(135deg, #f3e8ff 0%, #fae8ff 100%); /* Light Purple Gradient */
+        border: 1px solid #e9d5ff;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    /* Circular Chart SVG */
+    .mini-chart { width: 80px; height: 80px; }
+    .chart-bg { fill: none; stroke: #cffafe; stroke-width: 6; }
+    .chart-fill { fill: none; stroke: #0d9488; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 82, 100; }
+    .chart-text { font-weight: 700; font-size: 0.6rem; fill: #1e293b; text-anchor: middle; font-family: 'Inter', sans-serif; }
+
+    /* Calendar Date Styles */
+    .date-icon-square {
+        width: 50px;
+        height: 50px;
+        background: #c084fc; /* Purple */
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    .date-text-lg { font-size: 1.8rem; font-weight: 800; color: #581c87; }
+    .date-text-sm { font-size: 0.9rem; color: #6b21a8; }
+
+    /* 3. Bottom Reasons Section */
+    .reasons-container {
+        padding: 30px 40px 40px 40px;
+    }
+
+    .reasons-box {
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 25px;
+        background: #fdfdfd;
+    }
+
+    .reasons-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .reason-item {
+        display: flex;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        color: #475569;
+    }
+
+    .check-icon {
+        color: #10b981; /* Green Check */
+        background: #d1fae5;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        margin-top: 3px;
+    }
+
+    /* --- 🔘 BOTTOM BUTTONS --- */
+    .action-buttons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .btn-outline-big {
+        flex: 1;
+        padding: 16px;
+        border: 2px solid #0d9488;
+        background: white;
+        color: #0d9488;
+        font-weight: 700;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-outline-big:hover { background: #f0fdfa; transform: translateY(-2px); }
+
+    .btn-solid-big {
+        flex: 1;
+        padding: 16px;
+        background: #0d9488;
+        color: white;
+        font-weight: 700;
+        border-radius: 10px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-solid-big:hover { background: #0f766e; transform: translateY(-2px); color: white; }
+
+</style>
+
+<div class="decision-page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2 class="page-title">Final Decision</h2>
+        <p class="text-muted">AI-powered recommendation based on comprehensive analysis</p>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="decision-main-card">
+        
+        <!-- 1. Top Banner -->
+        <div class="recommendation-banner">
+            <!-- Icon changes based on decision -->
+            <div class="rec-icon-box {% if 'LAUNCH' in record.ai_result.decision %}rec-launch{% elif 'DELAY' in record.ai_result.decision %}rec-delay{% else %}rec-cancel{% endif %}">
+                {% if 'LAUNCH' in record.ai_result.decision %}
+                    <i class="fas fa-rocket"></i>
+                {% elif 'DELAY' in record.ai_result.decision %}
+                    <i class="fas fa-pause"></i>
+                {% else %}
+                    <i class="fas fa-ban"></i>
+                {% endif %}
+            </div>
+            <div>
+                <div class="rec-text-small">RECOMMENDATION</div>
+                <h1 class="rec-title">{{ record.ai_result.decision }}</h1>
+            </div>
+        </div>
+
+        <!-- 2. Middle Stats (Confidence & Date) -->
+        <div class="stats-container">
+            
+            <!-- Left: Confidence -->
+            <div class="stat-box stat-box-blue">
+                <div>
+                    <span class="stat-label">CONFIDENCE LEVEL</span>
+                    <!-- Using SVG for the circle chart -->
+                    <svg viewBox="0 0 36 36" class="mini-chart">
+                        <path class="chart-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="chart-fill" stroke-dasharray="{{ record.ai_result.avg }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="chart-text">{{ record.ai_result.avg | int }}%</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Right: Launch Window (Purple) -->
+            <div class="stat-box stat-box-purple">
+                <div class="d-flex align-items-center">
+                    <div class="date-icon-square">
+                        <i class="far fa-calendar-alt"></i>
+                    </div>
+                    <div>
+                        <span class="stat-label" style="color: #6b21a8;">OPTIMAL LAUNCH WINDOW</span>
+                        <div class="date-text-lg">10 - 25</div>
+                        <div class="date-text-sm">September</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Bottom Reasons -->
+        <div class="reasons-container">
+            <div class="reasons-box">
+                <div class="reasons-header">
+                    <div style="background:#0d9488; color:white; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem;">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    Key Reasons
+                </div>
+                
+                <!-- Dynamic Reason List -->
+                {% for reason in record.ai_result.reasons %}
+                <div class="reason-item">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    {{ reason }}
+                </div>
+                {% else %}
+                <div class="reason-item">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    Market conditions align with feature set.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM ACTION BUTTONS -->
+    <div class="action-buttons">
+       <a href="/visualization/{{ record._id }}" class="btn-outline-big">
+    <i class="fas fa-chart-bar"></i> View Visualization
+</a>
+       <a href="/report/{{ record._id }}" class="btn-solid-big">
+    <i class="fas fa-file-alt"></i> Generate Report
+</a>
+    </div>
+
+</div>
+
+{% endblock %}

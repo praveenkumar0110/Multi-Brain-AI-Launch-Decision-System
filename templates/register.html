@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Reusing styles for consistency) -->
+<style>
+    /* Centering */
+    .auth-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 20px;
+        padding-bottom: 50px;
+    }
+
+    .auth-logo { width: 60px; height: 60px; margin-bottom: 15px; }
+    
+    .auth-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #0f172a;
+        margin-bottom: 5px;
+    }
+
+    .auth-subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 30px;
+    }
+
+    /* Card */
+    .auth-card {
+        background: white;
+        border: 1px solid #f1f5f9;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        text-align: left;
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    .auth-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .auth-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        color: #1e293b;
+        outline: none;
+    }
+
+    .auth-input:focus {
+        border-color: #0d9488;
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+    }
+
+    .btn-auth {
+        background-color: #0d9488;
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-top: 10px;
+    }
+    .btn-auth:hover { background-color: #0f766e; }
+
+    .auth-footer {
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #64748b;
+        text-align: center;
+    }
+
+    .auth-footer a {
+        color: #0d9488;
+        font-weight: 600;
+        text-decoration: none;
+    }
+</style>
+
+<div class="auth-container">
+    
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI Logo" class="auth-logo">
+    
+    <h1 class="auth-title">Create Your Account</h1>
+    <p class="auth-subtitle">Join the AI-powered decision platform</p>
+
+    <!-- Sign Up Card -->
+    <div class="auth-card">
+        <form method="POST" action="/register">
+            
+            <!-- Full Name -->
+            <div class="form-group">
+                <label class="auth-label">Full Name</label>
+                <input type="text" name="name" class="auth-input" placeholder="John Doe" required>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label class="auth-label">Email Address</label>
+                <input type="email" name="email" class="auth-input" placeholder="you@company.com" required>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="auth-label">Password</label>
+                <input type="password" name="password" class="auth-input" placeholder="........" required>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label class="auth-label">Confirm Password</label>
+                <input type="password" name="confirm_password" class="auth-input" placeholder="........" required>
+            </div>
+
+            <!-- Button -->
+            <button type="submit" class="btn-auth">Sign Up</button>
+
+            <!-- Login Link -->
+            <div class="auth-footer">
+                Already have an account? <a href="/login">Login</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,234 @@
+
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Exact Replica of History Table) -->
+<style>
+    .history-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding-bottom: 60px;
+    }
+
+    .history-header {
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+
+    /* --- 📊 THE TABLE CARD --- */
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .custom-table th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 16px 24px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .custom-table td {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .custom-table tr:hover {
+        background-color: #fcfcfc;
+    }
+
+    /* Column Specifics */
+    .col-product { font-weight: 600; color: #1e293b; }
+    .col-conf { font-weight: 700; color: #1e293b; }
+    .col-date { color: #64748b; font-size: 0.85rem; }
+    .col-window { color: #475569; }
+
+    /* Status Badges (Small Pills) */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .badge-launch { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-delay  { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .badge-cancel { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    /* Action Link */
+    .action-link {
+        color: #0d9488;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: gap 0.2s;
+    }
+    .action-link:hover {
+        color: #0f766e;
+        gap: 8px; /* Arrow moves on hover */
+    }
+
+    /* --- 📉 BOTTOM STATS ROW --- */
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 25px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    /* Stat Colors */
+    .num-total { color: #1e293b; }
+    .num-launch { color: #166534; }
+    .num-delay { color: #b45309; }
+
+</style>
+
+<div class="history-container">
+    
+    <!-- Header -->
+    <div class="history-header">
+        <h2 class="page-title">Decision History</h2>
+        <p class="text-muted small">Learn from past decisions and track your product launches</p>
+    </div>
+
+    <!-- 📊 THE TABLE -->
+    <div class="table-card">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Decision</th>
+                    <th>Confidence</th>
+                    <th>Date</th>
+                    <th>Launch Window</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <!-- Product Name -->
+                    <td class="col-product">{{ item.details.name }}</td>
+
+                    <!-- Decision Pill -->
+                    <td>
+                        {% if 'LAUNCH' in item.ai_result.decision %}
+                            <span class="status-badge badge-launch"><i class="fas fa-rocket"></i> Launch</span>
+                        {% elif 'DELAY' in item.ai_result.decision %}
+                            <span class="status-badge badge-delay"><i class="fas fa-clock"></i> Delay</span>
+                        {% else %}
+                            <span class="status-badge badge-cancel"><i class="fas fa-ban"></i> Cancel</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Confidence -->
+                    <td class="col-conf">{{ item.ai_result.avg | int }}%</td>
+
+                    <!-- Date -->
+                    <td class="col-date">{{ item.timestamp.strftime('%Y-%m-%d') }}</td>
+
+                    <!-- Launch Window (Simulated for display based on screenshot) -->
+                    <td class="col-window">
+                        {% if 'LAUNCH' in item.ai_result.decision %}
+                            {{ item.timestamp.strftime('%b') }} 10-25
+                        {% elif 'DELAY' in item.ai_result.decision %}
+                            Next Month
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+
+                    <!-- Actions -->
+                    <td style="text-align: right;">
+                        <a href="/report/{{ item._id }}" class="action-link">
+                            View Report <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
+                        No history available yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 📉 BOTTOM STATS ROW -->
+    <div class="stats-card">
+        <div class="stat-item">
+            <div class="stat-number num-total">{{ total }}</div>
+            <div class="stat-label">Total Decisions</div>
+        </div>
+        <div style="width: 1px; height: 40px; background: #f1f5f9;"></div>
+        <div class="stat-item">
+            <div class="stat-number num-launch">{{ launched }}</div>
+            <div class="stat-label">Launched</div>
+        </div>
+        <div style="width: 1px; height: 40px; background: #f1f5f9;"></div>
+        <div class="stat-item">
+            <div class="stat-number num-delay">{{ delayed }}</div>
+            <div class="stat-label">Delayed</div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
