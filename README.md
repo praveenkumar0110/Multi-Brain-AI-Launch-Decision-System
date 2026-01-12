@@ -187,50 +187,8 @@ Copy code
 
 ---
 
-## 📂 Project Structure
 
-AI_Launch_Decision_System/
-│
-├── app.py
-├── ai_core/
-│ ├── market_agent.py
-│ ├── product_agent.py
-│ ├── risk_agent.py
-│ ├── timing_agent.py
-│ └── brain_orchestrator.py
-├── auth/
-│ └── auth_routes.py
-├── templates/
-├── static/
-├── requirements.txt
-├── .gitignore
-└── README.md
 
-yaml
-Copy code
-
----
-
-## 🎓 Academic Value
-
-- Major Project (6-month scope)
-- Demonstrates:
-  - Multi-agent AI
-  - Explainable AI
-  - Decision Intelligence
-  - Secure backend design
-- Extendable for research and industry use
-
----
-
-## 🔮 Future Enhancements
-
-- Real-time market APIs
-- Reinforcement learning for decision improvement
-- Advanced medical compliance checks
-- SaaS deployment
-
----
 
 ## 🏆 Conclusion
 
