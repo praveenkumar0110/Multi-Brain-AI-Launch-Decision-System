@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- 🎨 INTERNAL CSS (Loader Animation) -->
+<style>
+    .loader-container {
+        max-width: 600px;
+        margin: 80px auto;
+        text-align: center;
+        background: white;
+        padding: 50px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
+    }
+
+    .loader-icon {
+        width: 80px;
+        margin-bottom: 25px;
+        animation: pulse 2s infinite;
+    }
+
+    .loader-title {
+        color: #0d9488;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
+
+    /* Progress Bar Track */
+    .progress-track {
+        width: 100%;
+        background: #f1f5f9;
+        height: 12px;
+        border-radius: 20px;
+        margin-top: 40px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Progress Bar Fill */
+    .progress-fill {
+        width: 0%;
+        height: 100%;
+        background: #0d9488; /* Teal */
+        border-radius: 20px;
+        transition: width 3s linear; /* 3 Seconds Duration */
+    }
+
+    /* Status Text */
+    .status-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<div class="loader-container">
+    
+    <!-- Icon -->
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" class="loader-icon" alt="AI Brain">
+    
+    <h2 class="loader-title">AI Committee is Analyzing...</h2>
+    <p class="text-muted">Consulting Market, Product, Risk, and Business Agents</p>
+
+    <!-- Progress Bar -->
+    <div class="progress-track">
+        <div id="p-bar" class="progress-fill"></div>
+    </div>
+    
+    <!-- Changing Text -->
+    <div class="status-row">
+        <span id="status-text">Initializing parameters...</span>
+        <span id="percent-text">0%</span>
+    </div>
+
+    <!-- ⚠️ HIDDEN FORM (Crucial: Passes data to Python) -->
+    <form id="hiddenForm" action="/process_ai" method="POST">
+        {% for key, value in data.items() %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+    </form>
+
+</div>
+
+<script>
+    // 1. Start Progress Bar Animation (0 to 100% in 3 seconds)
+    setTimeout(() => { 
+        document.getElementById('p-bar').style.width = "100%"; 
+    }, 100);
+
+    // 2. Change Status Text dynamically to simulate "Thinking"
+    const statusText = document.getElementById('status-text');
+    const percentText = document.getElementById('percent-text');
+
+    setTimeout(() => { statusText.innerText = "Market Brain checking trends..."; percentText.innerText = "35%"; }, 800);
+    setTimeout(() => { statusText.innerText = "Risk Brain calculating probabilities..."; percentText.innerText = "72%"; }, 1800);
+    setTimeout(() => { statusText.innerText = "Finalizing Consensus..."; percentText.innerText = "99%"; }, 2600);
+
+    // 3. Submit Form automatically after 3 seconds
+    setTimeout(() => {
+        document.getElementById('hiddenForm').submit();
+    }, 3000);
+</script>
+
+{% endblock %}
