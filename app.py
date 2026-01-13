@@ -13,6 +13,7 @@ from ai_core.brain_orchestrator import MultiAgentOrchestrator
 
 app = Flask(__name__)
 
+
 # --- CONFIGURATION ---
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/'
 app.config['SECRET_KEY'] = 'super_secret_key_for_session' 
